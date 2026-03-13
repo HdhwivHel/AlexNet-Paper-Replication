@@ -2,7 +2,7 @@ import torchvision.transforms.v2 as transforms
 import torch
 
 
-def get_dataset():
+def get_datasets():
     train_transform = transforms.Compose(
         [
             transforms.Resize(256),

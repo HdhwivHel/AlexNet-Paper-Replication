@@ -1,34 +1,46 @@
+from pathlib import Path
+import os
 import torch
 from torch.utils.data import DataLoader
-import torch.nn as nn
-import torch.optim as optim
 from tqdm.auto import tqdm
 from dataset.data_pipeline import get_datasets
 from models.alexnet import AlexNet
 import yaml
 
-with open("configs/config.yaml", "r") as f:
+BASE_DIR = Path(__file__).resolve().parent
+CONFIG_PATH = BASE_DIR / "configs" / "config.yaml"
+CHECKPOINT_PATH = BASE_DIR / "results" / "checkpoints" / "AlexNet.pth"
+
+with open(CONFIG_PATH, "r", encoding="utf-8") as f:
     config = yaml.safe_load(f)
 
 batch_size = config["testing"]["batch_size"]
-workers = config["testing"]["num_workers"]
+workers = config["test_dataset"]["num_workers"]
 
 
 def test():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     _, test_dataset = get_datasets()
 
+    # Keep DataLoader stable on Windows with CUDA + multiple workers.
+    use_pin_memory = device.type == "cuda" and not (os.name == "nt" and workers > 0)
+
+    if not CHECKPOINT_PATH.exists():
+        raise FileNotFoundError(
+            f"Checkpoint not found at {CHECKPOINT_PATH}. Run train.py first to generate it."
+        )
+
     test_loader = DataLoader(
         test_dataset,
         batch_size=batch_size,
         shuffle=False,
         num_workers=workers,
-        pin_memory=True,
-        persistent_workers=True,
+        pin_memory=use_pin_memory,
+        persistent_workers=workers > 0,
     )
 
     model = AlexNet().to(device)
-    model.load_state_dict(torch.load("results/checkpoints/AlexNet.pth"))
+    model.load_state_dict(torch.load(CHECKPOINT_PATH, map_location=device))
     model.eval()
 
     with torch.inference_mode():
@@ -36,8 +48,8 @@ def test():
         total = 0
 
         for X, y in tqdm(test_loader):
-            X = X.to(device)
-            y = y.to(device)
+            X = X.to(device, non_blocking=use_pin_memory)
+            y = y.to(device, non_blocking=use_pin_memory)
             outputs = model(X)
             predicted = torch.argmax(outputs, dim=1)
             correct += (predicted == y).sum().item()

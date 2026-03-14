@@ -66,7 +66,9 @@ python evaluate.py
 ## 2. Notebook Implementation
 
 The notebook (`main.ipynb`) provides a **step-by-step implementation of AlexNet** that is easier to follow and experiment with.
+
 Colab Link: https://colab.research.google.com/github/HdhwivHel/AlexNet-Paper-Replication/blob/main/main.ipynb
+
 The notebook includes:
 
 - Model construction

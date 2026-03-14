@@ -1,0 +1,7 @@
+torch>=2.1
+torchvision>=0.16
+datasets>=2.14
+tqdm>=4.66
+PyYAML>=6.0
+gradio>=4.0
+Pillow>=10.0

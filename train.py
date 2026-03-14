@@ -22,6 +22,8 @@ workers = config["train_dataset"]["num_workers"]
 
 
 def train():
+    torch.set_float32_matmul_precision("high")
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     CHECKPOINT_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -39,6 +41,9 @@ def train():
         persistent_workers=workers > 0,
     )
     model = AlexNet().to(device)
+    should_compile = hasattr(torch, "compile") and device.type == "cuda"
+    if should_compile:
+        model = torch.compile(model)
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(
         model.parameters(), lr=learning_rate, momentum=0.9, weight_decay=0.0005
@@ -68,7 +73,8 @@ def train():
         print(
             f"Epoch [{epoch+1}/{num_epochs}], Loss: {train_loss:.4f}, Accuracy: {train_acc:.4f}"
         )
-        torch.save(model.state_dict(), CHECKPOINT_PATH)
+        model_to_save = model._orig_mod if hasattr(model, "_orig_mod") else model
+        torch.save(model_to_save.state_dict(), CHECKPOINT_PATH)
 
 
 if __name__ == "__main__":

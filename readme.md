@@ -21,7 +21,7 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/HdhwivHel/AlexNet-Paper-Replication
-cd <repo-name>
+cd AlexNet-Paper-Replication
 ```
 
 Install the required dependencies:

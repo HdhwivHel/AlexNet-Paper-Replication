@@ -72,7 +72,6 @@ The notebook includes:
 - Model construction
 - Training loop
 - Evaluation
-- Visualization of training metrics
 - Exploration of predictions on validation images
 
 ---

@@ -1,14 +1,13 @@
 training:
-  epochs: 10
-  batch_size: 128
+  epochs: 40
+  batch_size: 64
   learning_rate: 0.01
 
 testing:
-  batch_size: 128
-  num_workers: 4
+  batch_size: 64
 
 train_dataset:
-  num_workers: 4
+  num_workers: 8
 
 test_dataset:
-  num_workers: 4
+  num_workers: 8

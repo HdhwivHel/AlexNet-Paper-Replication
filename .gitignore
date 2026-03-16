@@ -1,4 +1,6 @@
-data/
+data/train
+data/validation
+
 
 # Python caches
 __pycache__/

@@ -2,7 +2,7 @@ Install the dataset in the data directory
 
 Your folder structure should look like this:
 
-            data
+            data/
              |
              |
              |
@@ -10,4 +10,5 @@ Your folder structure should look like this:
     -----------------------
     |                     |
     |                     |
-  train               validation
+  train/             validation/
+    
